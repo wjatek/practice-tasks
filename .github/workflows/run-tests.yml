@@ -1,0 +1,42 @@
+name: Run Tests in Changed Tasks
+
+on:
+  pull_request:
+    paths:
+      - 'tasks/**'
+    branches:
+      - '**'
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Install dependencies
+        run: |
+          npm install
+
+      - name: Get modified directories
+        id: modified-dirs
+        run: |
+          modified_dirs=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '^tasks/' | cut -d '/' -f 2 | sort -u)
+          echo "::set-output name=dirs::$(echo $modified_dirs | tr '\n' ' ')"
+
+      - name: Run tests in modified tasks
+        run: |
+          for dir in ${{ steps.modified-dirs.outputs.dirs }}
+          do
+            echo "Running tests for task in '$dir' directory"
+            cd tasks/$dir
+            npm test
+            cd -
+          done
+        if: steps.modified-dirs.outputs.dirs != ''
