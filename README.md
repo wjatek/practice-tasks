@@ -5,7 +5,7 @@ This is a monorepo. All tasks are located in the `tasks` directory. Each task co
 Ensure you have **Node.js** installed. Then, clone the repository and install dependencies:
 
 ```sh
-git clone <repo-url>
+git clone https://github.com/wjatek/practice-tasks.git
 cd practice-tasks
 npm i
 ```
